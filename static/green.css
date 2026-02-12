@@ -1,0 +1,98 @@
+body{
+    background-color: #002e01;
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    color: #fff;
+    font-size:x-large;
+    font-weight: 50;
+    word-spacing: 3px;
+    text-spacing-trim: 10px;
+    font-style:normal;
+}
+.container{
+    text-align: cente;
+    width: 50%;
+}
+h1{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    border:2px solid #023a0d ;
+    box-shadow:-1px 1px 2px #09631b;
+}
+form {
+    background-color: #023a0d;;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin: 10px;
+
+    width:100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+form:hover {
+    background-color: #195f11;;
+}
+form:focus-within {
+    box-shadow: 0 0 0 2px rgba(6, 255, 31, 0.15);
+}
+form input{
+    flex: 1; 
+    color: #fff;
+    background:transparent;
+    border:none;
+    outline: none;
+    font-size: large;
+    font-weight: 200;
+    padding: 5px;
+}
+form input::placeholder {
+    color: #b0b0b0;
+}
+form button{
+    height: 30px;
+    background-color:;
+    background-color: #ffffff;
+    border-radius: 45%;
+    border: none;
+    cursor: pointer;
+    width: ;
+    font-weight: 500;
+    padding: 5px;
+    padding: 5px 10px;
+}
+form button:hover{
+    background-color: #5ea947;
+}
+.chats{
+    background-color: ;
+    width: 100%;
+}
+.question{
+    display: flex;
+}
+.question .blank_space{
+    width: 40%;
+}
+.question .query{
+    width: 60%;
+    background-color: #023a0d;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    box-shadow:-3px 3px 2px #097920;
+    box-shadow:-1px 1px 2px #09631b;
+    text-align: start;
+    padding: 20px;
+    text-align:start;
+}
+
+.response{
+    display: flex;
+    justify-content: start;
+    padding-bottom: 8px;
+    border-bottom:2px solid #023a0d ;
+}
