@@ -19,7 +19,7 @@ Session(app)
 @app.route('/')
 def home():
     # We only need one main template now
-    return render_template('chatGptPage.html')
+    return render_template('Index.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():

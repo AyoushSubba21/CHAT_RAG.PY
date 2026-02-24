@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayushman Bharat Digital Mitra</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{url_for('static',filename='chatGpt.css')}}">
+
+</head>
+<body>
+
+<div class="top-strip"></div>
+
+<div class="header">
+    <div class="header-left">
+        <img src="{{ url_for('static', filename='Images/logo.png') }}" alt="PM-JAY Logo">
+        <div>
+            <div class="header-title">Ayushman Bharat Digital Mitra</div>
+            <div class="header-subtitle">National Health Authority Assistance</div>
+        </div>
+    </div>
+    <div class="header-right">
+        <a href=""></a>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="chat-card">
+        <div id="chat-container">
+            </div>
+
+        <div class="input-section">
+            <form id="chat-form">
+                <div class="input-inner">
+                    <input type="text" id="user-input" placeholder="Type your query..." required autocomplete="off">
+                    <button type="button" id="mic-btn" class="action-btn">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button type="submit" class="action-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="footer">© National Health Authority | Government of India</div>
+<script src="{{url_for('static',filename='chatGpt1.js')}}"></script>
+
+</body>
+</html>
