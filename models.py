@@ -19,3 +19,13 @@ def get_gemini():
         temperature=0.2
     )
     return llm
+
+def get_groq():
+    from langchain_groq import ChatGroq
+    import os
+    llm=ChatGroq(
+        model="llama-3.1-8b-instant",
+        api_key=os.getenv("GROQ_API_KEY"),
+        temperature=0.2
+    )
+    return llm
