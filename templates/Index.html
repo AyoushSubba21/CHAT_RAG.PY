@@ -13,6 +13,22 @@
 
 <div class="top-strip"></div>
 
+<!-- Top Info Bar -->
+<div class="top-bar">
+    <div class="toll-free">
+        Toll Free: <strong>14555 / 1800-111-565</strong>
+    </div>
+
+    <div class="top-controls">
+        <button id="zoom-in" class="zoom-btn">A+</button>
+        <button id="zoom-out" class="zoom-btn">A−</button>
+
+        <button id="theme-toggle" class="theme-btn">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+</div>
+
 <div class="header">
     <div class="header-left">
         <img src="{{ url_for('static', filename='Images/logo.png') }}" alt="PM-JAY Logo">
@@ -21,15 +37,16 @@
             <div class="header-subtitle">National Health Authority Assistance</div>
         </div>
     </div>
-    <div class="header-right">
-        <a href=""></a>
-    </div>
 </div>
 
 <div class="main-container">
     <div class="chat-card">
-        <div id="chat-container">
-            </div>
+
+        <div class="initial-message">
+            Ask your query about Ayushman Bharat scheme
+        </div>
+
+        <div id="chat-container"></div>
 
         <div class="input-section">
             <form id="chat-form">
@@ -44,10 +61,13 @@
                 </div>
             </form>
         </div>
-    </div>
-</div>
 
-<div class="footer">© National Health Authority | Government of India</div>
+    </div>  <!-- closes chat-card -->
+</div>      <!-- ✅ ADD THIS (closes main-container) -->
+
+<div class="footer">
+    © National Health Authority | Government of India
+</div>
 <script src="{{url_for('static',filename='JS/1.js')}}"></script>
 
 </body>
