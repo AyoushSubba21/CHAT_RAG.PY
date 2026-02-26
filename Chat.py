@@ -40,12 +40,19 @@ def Chat_response(user_input: str) -> str:
     user_input=preprocess_query(user_input)
 
     if len(user_input.split()) < 2 and user_input not in ["apply", "benefits", "eligibility","treatment"]:
-        return "I am your Digital Mitra. How can I help you with the Ayushman Bharat scheme today?"
+        return "I am your PMJAY Mitra. How can I help you with the Ayushman Bharat scheme today?"
 
-    docs=vectorstore.similarity_search(user_input,k=3)
-
+    docs=vectorstore.similarity_search_with_score(user_input,k=10)
+    data=[]
+    for doc,score in docs:
+        if score <0.5:
+            data.append(doc)
+    
+    if(data==[]):
+        return"I am PMJAY Bot ask me regarding to it!!. Like Which hospital provides what ?"
+        
     context = "\n\n".join(
-        f"[Source] {doc.page_content}" for doc in docs
+        f"[Source] {data.page_content}" for doc in docs
     )
 
     prompt = f"""
@@ -60,6 +67,7 @@ def Chat_response(user_input: str) -> str:
     CRITICAL INSTRUCTION: 
     - You must ignore case-sensitivity (UPPERCASE or lowercase does not matter).
     -You may get data where only small part of the query is used, so you must be able to understand the query and provide answer based on the context..
+    -The context below may be the list of hospitals in a tabular format (Hospital Name, Address, District, Specialty).
 
     Context:
     {context}

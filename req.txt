@@ -1,0 +1,12 @@
+flask
+dotenv
+langchain
+langchain-huggingface
+langchain-google-genai
+langchain-community
+langchain_groq
+pypdf
+sentence-transformers
+faiss-cpu
+
+
