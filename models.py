@@ -4,9 +4,9 @@ load_dotenv()
 
 
 def get_embeddings():
-    embedding_model=HuggingFaceEmbeddings(
-        model_name="all-MiniLM-L6-v2",
-        model_kwargs={"device":"cpu"}
+    embedding_model = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        model_kwargs={"device": "cpu"}
     )
     return embedding_model
 
