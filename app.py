@@ -1,8 +1,5 @@
 
 from flask import Flask, render_template, request, jsonify
-from flask import session as flask_session
-from flask_cors import CORS
-from flask_session import Session
 from Chat import Chat_response
 import webbrowser
 import os
