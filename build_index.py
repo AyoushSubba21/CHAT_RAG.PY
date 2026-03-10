@@ -1,74 +1,62 @@
 import os
 from dotenv import load_dotenv
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
-from langchain_community.document_loaders.csv_loader import CSVLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+import camelot
+import pandas as pd
 from langchain_community.vectorstores import FAISS
 from models import get_embeddings
 
 load_dotenv()
 
 INDEX_PATH = "faiss_index"
-
+PDF_FILE = "DATA/aarogya-karnataka-hospital-list-1.pdf" 
 def Build_index():
-    print("Loading documents...")
-
+    print("load the pdf...")
     #loader_txt = TextLoader("DATA/1.txt")
-    #loader_pdf = PyPDFLoader("DATA/Treatment.pdf")
-    #loader_pdf2=PyPDFLoader("DATA/DJ_HistoryAndLife.pdf")
-    
+    #loader_pdf = PyPDFLoader("DATA/Life.pdf")
+    #documents = loader_pdf.load() + loader_txt.load()
 
-    #pdf_files = [
-     #   "DATA/treatment1.pdf",
-      #  "DATA/HEALTH_BENEFIT_PACKAGE(HBP).pdf"
-    #]
-    
-
-
-    #all_documents = []
-
-   # for pdf in pdf_files:
-    #    loader = PyPDFLoader(pdf)
-     #   docs = loader.load()
-      #  all_documents.extend(docs)
-
-    #print(len(all_documents))
-
-    #documents = all_documents
-   # print("Documents loaded successfully!")
-
-    
-
-   # print("Splitting documents...")
-
-    ##text_splitter = RecursiveCharacterTextSplitter(
-      #  chunk_size=500,
-       # chunk_overlap=80
+    # Split documents
+    #text_splitter = RecursiveCharacterTextSplitter(
+     #   chunk_size=700,
+      #  chunk_overlap=80
     #)
-
     #chunks = text_splitter.split_documents(documents)
+    print("Loading tables from PDF...")
     
-    csv_file = "DATA/aarogya-karnataka-hospital-list.csv" 
+    # 'lattice' flavor works for tables with visible borders..
+    tables = camelot.read_pdf(PDF_FILE, pages="all", flavor="lattice")
+
+    if not tables:
+        print("No tables found in PDF.")
+        return
+
+    print(f"Found {len(tables)} tables in the PDF.")
+
+    # Combining all tables into a single DataFrame..
+    df_list = [table.df for table in tables]
+    pdf_data = pd.concat(df_list, ignore_index=True)
+
     
-    # CSVLoader treats each row as a separate document automatically so we dont need to create chunks like in pypdf..
-    loader = CSVLoader(file_path=csv_file, encoding="utf-8")
-    documents = loader.load()
+    pdf_data.columns = pdf_data.iloc[0]
+    pdf_data = pdf_data[1:]
 
-    print(f"Loaded {len(documents)} hospital records.")
-    
-    
+    # Convert each row into a text document for embeddings..
+    documents = []
+    for _, row in pdf_data.iterrows():
+        text = " | ".join(row.values.astype(str))
+        documents.append(text)
 
+    print(f"Converted {len(documents)} rows into documents for embeddings.")
 
-    print("Creating embeddings...")
-    embedding_model = get_embeddings();##Initializing the embedding model.....
+    print("Initializing embedding model...")
+    embedding_model = get_embeddings()  # your HuggingFace embedding model
 
-    print("Building FAISS index...")
+    print("Building FAISS vector index...")
+    vectorstore = FAISS.from_texts(documents, embedding_model)
 
-    vectorstore = FAISS.from_documents(documents, embedding_model)
-
-    print("Saving index locally...")
+    print("Saving FAISS index locally...")
     vectorstore.save_local(INDEX_PATH)
-    print("Index built successfully!")
+    print("FAISS index built successfully!")
 
 if __name__ == "__main__":
     Build_index()
