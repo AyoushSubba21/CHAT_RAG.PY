@@ -42,50 +42,49 @@ def preprocess_query(query):
 
 def Chat_response(user_input: str) -> str:
     initialize_models()
+
     user_input = preprocess_query(user_input)
 
-    if len(user_input.split()) < 2 and user_input not in ["benefits", "eligibility", "treatment"]:
-        return "I am your PMJAY Mitra. How can I help you with the Ayushman Bharat scheme today?"
-
     docs = vectorstore.similarity_search(user_input, k=5)
-
-    if not docs:
-        return "I am PMJAY Bot ask me regarding to it!!. Like Which hospital provides what ?"
 
     context = "\n\n".join(
         f"[Source] {doc.page_content}" for doc in docs
     )
 
-
     prompt = f"""
-You are a professional healthcare assistance chatbot for Ayushman Bharat (PM-JAY).
+You are an official digital assistant for the Ayushman Bharat – Pradhan Mantri Jan Arogya Yojana (PM-JAY).
 
-STRICT RULES:
-1. Answer ONLY using the information provided in the CONTEXT.
-3. If the answer cannot be found in the context, reply EXACTLY with:
-"I’m sorry, I could not find relevant information in the available records in our PMJAY Hospital list."
-4. Understand small spelling mistakes in the user's query.
-5. If a specialization is mentioned, return ONLY hospitals that match that specialization.
-6. Remove duplicate hospitals.
-7. Return the response ONLY in HTML format exactly as defined below.
+Your role is to help citizens with:
+• Scheme benefits
+• Eligibility criteria
+• Covered treatments
+• PM-JAY empanelled hospitals
 
-HTML RESPONSE FORMAT:
+Professional Behaviour Rules:
+1. Respond politely and professionally like a government digital assistant.
+2. If the user greets you (hello, hi, etc.), respond politely and ask how you can help.
+3. Answer questions about PM-JAY benefits, eligibility, hospitals, and treatments.
+4. Use ONLY the information provided in CONTEXT when listing hospitals.
+5. If no relevant hospital information exists in the context, say:
+
+"I’m sorry, I could not find relevant hospital information in the PM-JAY database."
+
+6. Return hospital results in structured HTML format.
+
+HTML FORMAT:
 
 Start with a short introduction.
 
-Then list hospitals using this exact structure:
-
 <br>
-<Use numbered list starting from 1.>. <b>hospital_name</b><br>
+
+1. <b>Hospital Name</b><br>
 <ul>
-    <li>Specialization: matching_specialization</li>
-    <li>Contact Number: contact_number</li>
-    <li>Address: address</li>
+<li>Specialization: ...</li>
+<li>Contact Number: ...</li>
+<li>Address: ...</li>
 </ul>
 
-<br>
-
-Leave exactly ONE blank line between hospitals.
+Leave one blank line between hospitals.
 
 CONTEXT:
 {context}
@@ -93,7 +92,7 @@ CONTEXT:
 USER QUESTION:
 {user_input}
 
-Provide the final structured answer below:
+Provide the final answer below.
 """
 
     response = llm.invoke(prompt)

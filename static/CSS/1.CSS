@@ -147,13 +147,13 @@ body {
 }
 
 .input-section {
-    border-top: 1px solid #eee;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.25);
     padding: 15px;
-    background: #fff;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(6px);
+    border-radius: 16px;
 }
-
 .input-inner { 
     display: flex; 
     gap: 10px; 
@@ -162,12 +162,14 @@ body {
 input {
     flex: 1;
     padding: 12px 20px;
-    border-radius: 25px;
-    border: 1px solid #ddd;
+    border-radius: 30px;
+    border: 1px solid #dcdcdc;
     outline: none;
     font-size: 0.95rem;
+    background: #ffffff;
+    color: #333;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
-
 .action-btn {
     background: var(--primary-blue);
     color: white;
@@ -237,7 +239,7 @@ body.dark-mode .top-bar {
 }
 
 body.dark-mode input {
-    background: #2a2a2a;
+    background: #1e1e1e;
     color: white;
     border: 1px solid #444;
 }
