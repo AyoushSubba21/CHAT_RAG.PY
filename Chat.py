@@ -1,7 +1,6 @@
 from build_index import Build_index
-from models import get_gemini, get_embeddings, get_groq
+from models import get_embeddings, get_groq
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
 import os
@@ -54,7 +53,6 @@ PMJAY_KEYWORDS = [
 ]
 def Chat_response(user_input: str) -> str:
     initialize_models()
-
     user_input = preprocess_query(user_input)
 
     if len(user_input.split()) < 2 and user_input not in PMJAY_KEYWORDS:
@@ -84,11 +82,18 @@ User Question:
 
 
     # Hospital search
+    if len(user_input.split()) < 2 and user_input not in ["benefits", "eligibility", "treatment"]:
+        return "I am your PMJAY Mitra. How can I help you with the Ayushman Bharat scheme today?"
+
     docs = vectorstore.similarity_search(user_input, k=5)
+
+    if not docs:
+        return "I am PMJAY Bot ask me regarding to it!!. Like Which hospital provides what ?"
 
     context = "\n\n".join(
         f"[Source] {doc.page_content}" for doc in docs
     )
+
 
     prompt = f"""
 You are an official digital assistant for the Ayushman Bharat – Pradhan Mantri Jan Arogya Yojana (PM-JAY).
@@ -114,9 +119,13 @@ Professional Behaviour Rules:
 
 6. Return hospital results in structured HTML format.
 
-HTML FORMAT:
+HTML RESPONSE FORMAT:
 
 Start with a short introduction.
+
+Then list hospitals using this exact structure:
+
+Then list hospitals using this exact structure:
 
 <br>
 1. <b>hospital_name</b><br>

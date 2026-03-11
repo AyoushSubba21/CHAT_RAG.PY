@@ -11,7 +11,7 @@ function appendMessage(sender, text) {
     msgDiv.className = `message ${sender}-message`;
 
     const span = document.createElement('span');
-    span.innerText = text;
+    span.innerHTML = text;
 
     msgDiv.appendChild(span);
     chatContainer.appendChild(msgDiv);
@@ -57,7 +57,11 @@ chatForm.addEventListener('submit', async (e) => {
     appendMessage('user', query);
 
     userInput.value = '';
+<<<<<<< Updated upstream
     userInput.disabled = false;
+=======
+    userInput.disabled = true;
+>>>>>>> Stashed changes
     showTypingIndicator();
 
     try {
