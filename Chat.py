@@ -54,6 +54,7 @@ PMJAY_KEYWORDS = [
 ]
 def Chat_response(user_input: str) -> str:
     initialize_models()
+
     user_input = preprocess_query(user_input)
 
     if len(user_input.split()) < 2 and user_input not in PMJAY_KEYWORDS:
@@ -85,15 +86,12 @@ User Question:
     # Hospital search
     docs = vectorstore.similarity_search(user_input, k=5)
 
-    if not docs:
-        return "I am PMJAY Bot ask me regarding to it!!. Like Which hospital provides what ?"
-
     context = "\n\n".join(
         f"[Source] {doc.page_content}" for doc in docs
     )
 
     prompt = f"""
-You are a professional healthcare assistance chatbot for Ayushman Bharat (PM-JAY).
+You are an official digital assistant for the Ayushman Bharat – Pradhan Mantri Jan Arogya Yojana (PM-JAY).
 
 STRICT RULES:
 1. Answer ONLY using the information provided in the CONTEXT.
@@ -105,7 +103,18 @@ STRICT RULES:
 6. Return the response ONLY in HTML format.
 7. Hospitals must be indexed starting from 1.
 
-HTML RESPONSE FORMAT:
+Professional Behaviour Rules:
+1. Respond politely and professionally like a government digital assistant.
+2. If the user greets you (hello, hi, etc.), respond politely and ask how you can help.
+3. Answer questions about PM-JAY benefits, eligibility, hospitals, and treatments.
+4. Use ONLY the information provided in CONTEXT when listing hospitals.
+5. If no relevant hospital information exists in the context, say:
+
+"I’m sorry, I could not find relevant hospital information in the PM-JAY database."
+
+6. Return hospital results in structured HTML format.
+
+HTML FORMAT:
 
 Start with a short introduction.
 
