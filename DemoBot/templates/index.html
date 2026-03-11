@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Streaming Chatbot</title>
+</head>
+
+<body>
+
+<h2>Streaming Chatbot</h2>
+
+<input type="text" id="userInput" placeholder="Type message">
+<button onclick="sendMessage()">Send</button>
+
+<p><b>Bot:</b> <span id="botResponse"></span></p>
+
+<script>
+
+async function sendMessage() {
+
+    let message = document.getElementById("userInput").value;
+
+    const response = await fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: "message=" + encodeURIComponent(message)
+    });
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    document.getElementById("botResponse").innerHTML = "";
+
+    while (true) {
+
+        const {value, done} = await reader.read();
+
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+
+        document.getElementById("botResponse").innerHTML += chunk;
+    }
+}
+
+</script>
+
+</body>
+</html>
