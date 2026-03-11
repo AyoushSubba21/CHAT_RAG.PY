@@ -48,7 +48,7 @@ def Build_index():
         "Address"
     ]
 
-    pdf_data=pdf_data[[col for col in needed_columns_columns if col in pdf_data.columns]]
+    pdf_data=pdf_data[[col for col in needed_columns if col in pdf_data.columns]]
     
     print("Remaining Columns: ")
     print(pdf_data.columns)
@@ -59,19 +59,17 @@ def Build_index():
     for _, row in pdf_data.iterrows():
         hospital=row.get("Hospital Name","")
         specialization=row.get("Specialization","")
-        
         phone = row.get("Contact Number", "")
-        email = row.get("Email Id", ""),
+        email = row.get("Email Id", "")
         address = row.get("Address", "")
-
-    text = f"""
+        text = f"""
 Hospital: {hospital}
 Specialization: {specialization}
 Contact: {phone}
-Email:{email}
+Email: {email}
 Address: {address}
-
 """
+
     documents.append(text)
     print(f"Converted {len(documents)}  documents for embeddings.")
 
