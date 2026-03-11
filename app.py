@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from Chat import Chat_response
+from tempChat import Chat_response
 import webbrowser
 import os
 
@@ -28,7 +28,8 @@ def chat():
             "reply": reply
         })
 
-    except Exception:
+    except Exception as e:
+        print(e)
         return jsonify({
             "status": "error",
             "reply": "Service temporarily unavailable."
@@ -36,4 +37,5 @@ def chat():
 
 if __name__ == "__main__":
     print("Starting Flask server...")
+    initialize_models()
     app.run(debug=True)
