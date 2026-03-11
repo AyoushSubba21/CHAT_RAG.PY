@@ -57,7 +57,7 @@ chatForm.addEventListener('submit', async (e) => {
     appendMessage('user', query);
 
     userInput.value = '';
-    #userInput.disabled = true;
+    userInput.disabled = false;
     showTypingIndicator();
 
     try {
