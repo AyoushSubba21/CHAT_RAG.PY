@@ -48,7 +48,7 @@ def Build_index():
         "Address"
     ]
 
-    pdf_data=pdf_data[[col for col in needed_columns_columns if col in pdf_data.columns]]
+    pdf_data=pdf_data[[col for col in needed_columns if col in pdf_data.columns]]
     
     print("Remaining Columns: ")
     print(pdf_data.columns)
@@ -86,4 +86,5 @@ Address: {address}
     print("FAISS index built successfully!")
 
 if __name__ == "__main__":
+
     Build_index()
