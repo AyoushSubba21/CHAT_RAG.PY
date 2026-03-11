@@ -11,6 +11,7 @@ load_dotenv()
 
 INDEX_PATH = "faiss_index"
 
+
 if not os.path.exists(INDEX_PATH):
     Build_index()
 
@@ -25,7 +26,7 @@ def initialize_models():
     global llm, embedding_model, vectorstore
 
     if llm is None:
-        llm = get_gemini()
+        llm = get_groq()
         embedding_model = get_embeddings()
         vectorstore = FAISS.load_local(
             INDEX_PATH,
@@ -40,13 +41,48 @@ def preprocess_query(query):
     return query.strip()
 
 
+PMJAY_KEYWORDS = [
+    "pmjay",
+    "ayushman",
+    "scheme",
+    "benefits",
+    "eligibility",
+    "apply",
+    "coverage",
+    "insurance",
+    "health card",
+]
 def Chat_response(user_input: str) -> str:
     initialize_models()
     user_input = preprocess_query(user_input)
 
-    if len(user_input.split()) < 2 and user_input not in ["benefits", "eligibility", "treatment"]:
+    if len(user_input.split()) < 2 and user_input not in PMJAY_KEYWORDS:
         return "I am your PMJAY Mitra. How can I help you with the Ayushman Bharat scheme today?"
+    
+    # PMJAY explanation mode
+    if any(word in user_input for word in PMJAY_KEYWORDS):
 
+        prompt = f"""
+You are a healthcare assistant explaining Ayushman Bharat (PM-JAY).
+
+Explain clearly:
+- What PMJAY is
+- Benefits
+- Eligibility
+- Coverage amount
+- How to apply
+
+Return answer in simple HTML format.
+
+User Question:
+{user_input}
+"""
+
+        response = llm.invoke(prompt)
+        return response.content
+
+
+    # Hospital search
     docs = vectorstore.similarity_search(user_input, k=5)
 
     if not docs:
@@ -56,44 +92,40 @@ def Chat_response(user_input: str) -> str:
         f"[Source] {doc.page_content}" for doc in docs
     )
 
-
     prompt = f"""
 You are a professional healthcare assistance chatbot for Ayushman Bharat (PM-JAY).
 
 STRICT RULES:
 1. Answer ONLY using the information provided in the CONTEXT.
-3. If the answer cannot be found in the context, reply EXACTLY with:
+2. If the answer cannot be found in the context, reply EXACTLY with:
 "I’m sorry, I could not find relevant information in the available records in our PMJAY Hospital list."
-4. Understand small spelling mistakes in the user's query.
-5. If a specialization is mentioned, return ONLY hospitals that match that specialization.
-6. Remove duplicate hospitals.
-7. Return the response ONLY in HTML format exactly as defined below.
+3. Understand small spelling mistakes in the user's query.
+4. If a specialization is mentioned, return ONLY hospitals that match that specialization.
+5. Remove duplicate hospitals.
+6. Return the response ONLY in HTML format.
+7. Hospitals must be indexed starting from 1.
 
 HTML RESPONSE FORMAT:
 
 Start with a short introduction.
 
-Then list hospitals using this exact structure:
-
 <br>
-<Use numbered list starting from 1.>. <b>hospital_name</b><br>
+1. <b>hospital_name</b><br>
 <ul>
-    <li>Specialization: matching_specialization</li>
-    <li>Contact Number: contact_number</li>
-    <li>Address: address</li>
+<li>Specialization: matching_specialization</li>
+<li>Contact Number: contact_number</li>
+<li>Address: address</li>
 </ul>
 
 <br>
 
-Leave exactly ONE blank line between hospitals.
+Continue numbering sequentially.
 
 CONTEXT:
 {context}
 
 USER QUESTION:
 {user_input}
-
-Provide the final structured answer below:
 """
 
     response = llm.invoke(prompt)
