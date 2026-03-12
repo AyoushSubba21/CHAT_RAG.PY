@@ -3,7 +3,7 @@ from models import get_embeddings, get_groq
 from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
-import os
+import os 
 import re
 
 load_dotenv()
