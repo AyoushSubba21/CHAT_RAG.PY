@@ -5,7 +5,7 @@ langchain-huggingface
 langchain-google-genai
 langchain-community
 langchain_groq
-pypdf
+pypdf 
 sentence-transformers
 faiss-cpu
 
