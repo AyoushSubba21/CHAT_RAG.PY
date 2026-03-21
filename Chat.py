@@ -1,4 +1,4 @@
-from tempBuild_index import Build_index
+from Build_index import Build_index
 from models import get_groq, get_embeddings
 from extract_and_filter import extract_entities,extract_entities_no_llm,correct_with_fuzzy, post_filter,normalize_specialization
 from handles_random_text import greeting_response,is_greeting,is_relevant_query,out_of_scope_response
