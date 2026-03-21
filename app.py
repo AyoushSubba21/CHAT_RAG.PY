@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from tempChat import Chat_response, initialize_models
+from Chat import Chat_response, initialize_models
 import webbrowser
 import os
 
