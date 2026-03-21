@@ -1,8 +1,5 @@
-import ssl
-import certifi
-ssl._create_default_https_context = ssl.create_default_context(cafile=certifi.where())
 from flask import Flask, render_template, request, jsonify
-from tempChat import Chat_response
+from tempChat import Chat_response, initialize_models
 import webbrowser
 import os
 
@@ -32,15 +29,14 @@ def chat():
         })
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-      
+        print(e)
         return jsonify({
             "status": "error",
-            "reply": "Connection error."
+            "reply": "Service temporarily unavailable."
         }), 500
 
 if __name__ == "__main__":
     print("Starting Flask server...")
     initialize_models()
-    app.run(debug=True)
+    
+    app.run(debug=True,use_reloader=False)
