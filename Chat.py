@@ -1,16 +1,19 @@
-from build_index import Build_index
-from models import get_gemini, get_embeddings, get_groq
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_google_genai import ChatGoogleGenerativeAI
+from tempBuild_index import Build_index
+from models import get_groq, get_embeddings
+from extract_and_filter import extract_entities,extract_entities_no_llm,correct_with_fuzzy, post_filter,normalize_specialization
+from handles_random_text import greeting_response,is_greeting,is_relevant_query,out_of_scope_response
+from CONSTANT import DISTRICTS,SPECIALIZATIONS, keyword_mapping
+from format import response_format
 from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
 import os
 import re
+import json
+from rapidfuzz import process, fuzz
 
 load_dotenv()
 
 INDEX_PATH = "faiss_index"
-
 
 if not os.path.exists(INDEX_PATH):
     Build_index()
@@ -19,22 +22,27 @@ llm = None
 embedding_model = None
 vectorstore = None
 
-print("lata")
-
 
 def initialize_models():
     global llm, embedding_model, vectorstore
-    print("Models initializing..")
 
-    if llm is None:
-        llm = get_groq()
+    print("Models initializing...")
+
+    #if llm is None:
+     #   llm = get_groq()
+
+    if embedding_model is None:
         embedding_model = get_embeddings()
+
+    if vectorstore is None:
         vectorstore = FAISS.load_local(
             INDEX_PATH,
             embedding_model,
             allow_dangerous_deserialization=True
         )
-    print("Initializing completed")
+        print("Total documents in FAISS index:", vectorstore.index.ntotal)
+
+    print("Initialization completed")
 
 
 def preprocess_query(query):
@@ -43,48 +51,72 @@ def preprocess_query(query):
     return query.strip()
 
 
-PMJAY_KEYWORDS = [
-    "pmjay",
-    "ayushman",
-    "scheme",
-    "benefits",
-    "eligibility",
-    "apply",
-    "coverage",
-    "insurance",
-    "health card",
-]
 def Chat_response(user_input: str) -> str:
-    user_input = preprocess_query(user_input)
 
-    if len(user_input.split()) < 2 and user_input not in PMJAY_KEYWORDS:
-        return "I am your PMJAY Mitra. How can I help you with the Ayushman Bharat scheme today?"
+    user_input = preprocess_query(user_input)
+    
+    if is_greeting(user_input):
+        return greeting_response()
+
+    if not is_relevant_query(user_input):#if the query is not relevant to the healthcare ...
+        return out_of_scope_response()
+    # Extracting entities using LLM
+    #entities = extract_entities(user_input,llm)
+    
+    #extracting entities without llm..
+    entities=extract_entities_no_llm(user_input)
+
+    district = entities.get("district")
+    specialization = entities.get("specialization")
     
 
+    # Fuzzy correction
+    district = correct_with_fuzzy(district, DISTRICTS)
+    specialization=normalize_specialization(specialization)#normalizing the spec before checking for fuzzy...
+    specialization = correct_with_fuzzy(specialization, SPECIALIZATIONS)
 
-    # Hospital search
-    docs = vectorstore.similarity_search(user_input, k=5)
+    print("Detected district:", district)
+    print("Detected specialization:", specialization)
 
-    context = "\n\n".join(
-        f"[Source] {doc.page_content}" for doc in docs
-    )
+    docs = vectorstore.similarity_search(user_input, k=50)
+    print("Searched docs:",len(docs))
 
+    docs = post_filter(docs, district, specialization)
+    docs = docs[:10]
+    print("Lata...",docs[0])
+    
+    print("Retrieved docs:", len(docs))
+
+    if not docs:
+        return "Sorry, I could not find any PM-JAY hospitals matching your request."
+
+    context = "\n\n".join([doc.page_content for doc in docs])
+
+    
+    
     prompt = f"""
-You are a digital assistant for Ayushman Bharat – Pradhan Mantri Jan Arogya Yojana (PM-JAY).
+You are a PM-JAY hospital assistant.
 
-Rules:
-1. Use ONLY the information provided in the CONTEXT.
-2. Do NOT invent any hospital information.
-3. If the answer is not in the context, reply exactly:
-"I’m sorry, I could not find relevant hospital information in the PM-JAY database."
-4. Each hospital record in the context represents ONE hospital.
-5. Do NOT merge hospitals.
-6. Keep the SAME order as the hospitals appear in the CONTEXT.
-7. Remove duplicate hospitals if any.
+IMPORTANT RULES:
+1. Use ONLY the hospitals provided in the CONTEXT.
+2. Do NOT create or assume hospitals.
+3. If the context is empty, say:
+   "No hospitals found for this query."
+IMPORTANT:
+- Replace "Hospital Name" with the ACTUAL hospital name from context.
+- Do NOT print the words "Hospital Name".
+- Use real values from the context.
 
-Return the answer ONLY in HTML format.
+Each hospital record has this format:
 
-Format:
+Hospital Name: ...
+Specialization: ...
+District: ...
+Contact Number: ...
+Email Id: ...
+Address: ...
+
+Return ONLY this HTML format:
 
 <p>Here are the hospitals available under PM-JAY for your query:</p>
 
@@ -93,6 +125,7 @@ Format:
 <b>Hospital Name</b>
 <ul>
 <li>Specialization: ...</li>
+<li>District: ...</li>
 <li>Contact Number: ...</li>
 <li>Email Id: ...</li>
 <li>Address: ...</li>
@@ -107,6 +140,7 @@ USER QUESTION:
 {user_input}
 """
 
-    response = llm.invoke(prompt)
+    #response = llm.invoke(prompt)
 
-    return response.content
+    #return response.content
+    return response_format(docs,specialization)#Direct response without using llm....
