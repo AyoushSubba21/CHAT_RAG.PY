@@ -1,12 +1,35 @@
-flask
-dotenv
-langchain
-langchain-huggingface
-langchain-google-genai
-langchain-community
-langchain_groq
-pypdf 
-sentence-transformers
-faiss-cpu
-
-
+# Flask - Web framework
+flask==3.0.3
+ 
+# Environment variables
+python-dotenv==1.0.1
+ 
+# LangChain core
+langchain==0.2.16
+langchain-core==0.2.38
+langchain-community==0.2.16
+ 
+# FAISS - Vector store
+faiss-cpu==1.8.0
+ 
+# HuggingFace Embeddings
+langchain-huggingface==0.0.3
+sentence-transformers==3.0.1
+ 
+# LLM Providers
+langchain-groq==0.1.9
+langchain-google-genai==1.0.10
+ 
+# Fuzzy matching
+rapidfuzz==3.9.7
+ 
+# PDF table extraction
+camelot-py[cv]==0.11.0
+opencv-python==4.10.0.84
+ghostscript==0.7
+ 
+# Data processing
+pandas==2.2.2
+ 
+# HTTP requests (used internally by langchain/groq)
+requests==2.32.3
