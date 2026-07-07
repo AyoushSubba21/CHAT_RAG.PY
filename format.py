@@ -2,10 +2,9 @@ from extract_and_filter import normalize_specialization
 from CONSTANT import DISTRICTS,SPECIALIZATIONS
 from rapidfuzz import process, fuzz
 def response_format(docs,user_spec=None):
-    response = "<p>Here are the hospitals available under PM-JAY for your query:</p>"
-    response += "<ol>"
     
     user_spec=normalize_specialization(user_spec)
+    hospitals = []
 
     for doc in docs:
         meta = doc.metadata
@@ -49,17 +48,33 @@ def response_format(docs,user_spec=None):
 
         if user_spec and specialization=="":
             continue
-        response += f"""
-        <li>
-        <b>{name}</b>
-        <ul>
-        <li>Specialization: {specialization}</li>
-        <li>District: {district}</li>
-        <li>Contact Number: {contact}</li>
-        <li>Email Id: {email}</li>
-        <li>Address: {address}</li>
-        </ul>
-        </li>
+        
+        hospitals.append({
+            "name": name,
+            "district": district,
+            "specialization": specialization,
+            "contact": contact,
+            "email": email,
+            "address": address
+        })
+        
+        if not hospitals:
+            return "<p>Sorry, no PM-JAY hospitals found for your query.</p>"
+        
+        response = f"<p>🏥 <b>Found {len(hospitals)} PM-JAY Hospital(s)</b></p><ol>"
+        
+        for h in hospitals:
+            response += f"""
+            <li>
+                <p><b>🏨 {h['name']}</b></p>
+            <ul>
+                <li> <b>Specialization:</b> {h['specialization']}</li>
+                <li> <b>District:</b> {h['district']}</li>
+                <li> <b>Contact:</b> {h['contact']}</li>
+                <li> <b>Email:</b> {h['email']}</li>
+                <li> <b>Address:</b> {h['address']}</li>
+            </ul>
+            </li>
         """
 
     response += "</ol>"
