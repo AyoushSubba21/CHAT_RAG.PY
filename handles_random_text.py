@@ -52,17 +52,24 @@ def is_relevant_query(query: str) -> bool:
         return False
     
     
-    # 1. Check direct medical keyword match
+    # 2. Single short word — only allow exact keyword matches, NO fuzzy
+    if len(words) == 1 and len(query_lower) < 6:
+        if query_lower in MEDICAL_KEYWORDS:
+            return True
+        if query_lower in keyword_mapping:
+            return True
+        return False  # blocks "lata", "lati", "ajd", "aaa" etc.
+    # 3. Check direct medical keyword match
     for keyword in MEDICAL_KEYWORDS:
         if keyword in query_lower:
             return True
 
-    # 2. Check keyword_mapping keys (e.g. "eye", "heart", "bone")
+    # 4. Check keyword_mapping keys (e.g. "eye", "heart", "bone")
     for key in keyword_mapping:
         if key in words:
             return True
 
-    # 3. Fuzzy match against districts
+    # 5. Fuzzy match against districts
     if DISTRICTS:
         _, district_score, _ = process.extractOne(
             query_lower, DISTRICTS, scorer=fuzz.partial_ratio
@@ -70,7 +77,7 @@ def is_relevant_query(query: str) -> bool:
         if district_score >= 75:
             return True
 
-    # 4. Fuzzy match against specializations
+    # 6. Fuzzy match against specializations
     if SPECIALIZATIONS:
         _, spec_score, _ = process.extractOne(
             query_lower, SPECIALIZATIONS, scorer=fuzz.partial_ratio
@@ -80,6 +87,39 @@ def is_relevant_query(query: str) -> bool:
 
     return False
 
+##is the user asking to compare the hospitals...
+def is_compare_query(query: str) -> bool:
+    compare_keywords = [
+        "compare", "comparison", "vs", "versus",
+        "difference between", "better", "which is best",
+        "best hospital", "recommend", "suggest",
+        "top hospital", "which hospital", "good hospital"
+    ]
+    query_lower = query.lower()
+    return any(kw in query_lower for kw in compare_keywords)
+
+
+##handles offlinee messsage...
+def offline_message() -> str:
+    return """
+<p>📡 <b>You are currently in Offline Mode.</b></p>
+
+<p>You can still:</p>
+<ul>
+    <li>🏥 Search hospitals by district</li>
+    <li>🩺 Find hospitals by specialization</li>
+    <li>📍 Get contact details and addresses</li>
+</ul>
+
+<p>For complex queries like:</p>
+<ul>
+    <li>🔍 Comparing hospitals</li>
+    <li>⭐ Getting recommendations</li>
+    <li>💡 Personalized suggestions</li>
+</ul>
+
+<p>👉 <b>Please go online and try again!</b></p>
+"""
 def out_of_scope_response() -> str:
     return """I'm sorry, I can only assist with PM-JAY hospital-related queries.<br>
 
@@ -91,3 +131,7 @@ You can ask me things like:
 </ul>
 
 <p>Please try a <b>hospital</b> or <b>medical-related</b> question!<p>"""
+
+
+
+
