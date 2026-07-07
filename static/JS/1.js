@@ -1,5 +1,3 @@
-// ================= CHAT FUNCTIONALITY =================
-
 const chatForm = document.getElementById('chat-form');
 const chatContainer = document.getElementById('chat-container');
 const userInput = document.getElementById('user-input');
@@ -57,11 +55,7 @@ chatForm.addEventListener('submit', async (e) => {
     appendMessage('user', query);
 
     userInput.value = '';
-<<<<<<< Updated upstream
-    userInput.disabled = false;
-=======
     userInput.disabled = true;
->>>>>>> Stashed changes
     showTypingIndicator();
 
     try {
@@ -92,8 +86,7 @@ chatForm.addEventListener('submit', async (e) => {
 });
 
 
-// ================= DARK MODE FUNCTIONALITY =================
-
+//DARK MODE...
 const toggleBtn = document.getElementById("theme-toggle");
 
 if (toggleBtn) {
@@ -121,7 +114,7 @@ if (toggleBtn) {
         }
     });
 }
-// ================= ZOOM FUNCTIONALITY =================
+//zOOMING...
 
 let currentZoom = 100;
 
@@ -142,7 +135,7 @@ zoomOutBtn.addEventListener("click", () => {
     }
 });
 
-// ================= INITIAL INPUT CENTER MODE =================
+//INITIAL INPUT CENTER MODE...
 
 const chatCard = document.querySelector(".chat-card");
 
