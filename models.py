@@ -6,6 +6,7 @@ load_dotenv()
 
 def get_embeddings():
     embedding_model = HuggingFaceEmbeddings(
+        ##model_name=r"C:\Users\lenovo\OneDrive\Desktop\6th Sem\INTERNSHIP(AYUSHMAN BHARAT)\repos\CHAT_RAG.PY\models\models--sentence-transformers--paraphrase-multilingual-MiniLM-L12-v2\snapshots\e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
         model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
         model_kwargs={"device": "cpu"}
     )
