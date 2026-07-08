@@ -8,3 +8,6 @@ langchain_groq
 pypdf
 sentence-transformers
 faiss-cpu
+camelot-py
+pandas
+rapidfuzz
